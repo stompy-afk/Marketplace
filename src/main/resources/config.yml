@@ -1,0 +1,12 @@
+mongo:
+  uri-mode: false
+  normal:
+    host: 127.0.0.1
+    port: 27017
+    auth:
+      enabled: false
+      username: ''
+      password: ''
+  uri:
+    database: Marketplace
+    connection-string: mongodb://127.0.0.1:27017/Marketplace

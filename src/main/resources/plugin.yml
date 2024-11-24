@@ -1,0 +1,4 @@
+name: Marketplace
+version: 1.0
+main: lol.stompy.marketplace.Marketplace
+description: Marketplace plugin

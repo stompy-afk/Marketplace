@@ -1,5 +1,7 @@
 package lol.stompy.marketplace;
 
+import lol.stompy.marketplace.mongo.MongoHandler;
+import lol.stompy.marketplace.profile.Profile;
 import lol.stompy.marketplace.profile.ProfileHandler;
 import lombok.Getter;
 import net.milkbowl.vault.economy.Economy;
@@ -13,6 +15,7 @@ public class Marketplace extends JavaPlugin {
     private static Marketplace instance;
 
     private ProfileHandler profileHandler;
+    private MongoHandler mongoHandler;
 
     private Economy economy;
 
@@ -33,6 +36,19 @@ public class Marketplace extends JavaPlugin {
     @Override
     public void onEnable() {
         this.setupEconomy();
+
+        this.profileHandler = new ProfileHandler(this);
+        this.mongoHandler = new MongoHandler(this);
+    }
+
+    /**
+     * plugin disabling concept
+     */
+
+    @Override
+    public void onDisable() {
+        for (Profile profile : profileHandler.getProfiles())
+            profileHandler.save(profile, false);
     }
 
     /**
