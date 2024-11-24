@@ -16,7 +16,7 @@ public class MongoHandler {
 
     private MongoDatabase database;
     private MongoClient client;
-    private MongoCollection<Document> profiles;
+    private MongoCollection<Document> profiles, marketItems;
 
     /**
      * Mongo manager
@@ -61,6 +61,7 @@ public class MongoHandler {
 
     public void loadCollections() {
         profiles = this.database.getCollection("profiles");
+        this.marketItems = this.database.getCollection("marketItems");
     }
 
 }

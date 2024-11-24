@@ -1,5 +1,6 @@
 package lol.stompy.marketplace;
 
+import lol.stompy.marketplace.market.MarketItemHandler;
 import lol.stompy.marketplace.mongo.MongoHandler;
 import lol.stompy.marketplace.profile.Profile;
 import lol.stompy.marketplace.profile.ProfileHandler;
@@ -15,6 +16,7 @@ public class Marketplace extends JavaPlugin {
     private static Marketplace instance;
 
     private ProfileHandler profileHandler;
+    private MarketItemHandler marketItemHandler;
     private MongoHandler mongoHandler;
 
     private Economy economy;
@@ -37,6 +39,7 @@ public class Marketplace extends JavaPlugin {
     public void onEnable() {
         this.setupEconomy();
 
+        this.marketItemHandler = new MarketItemHandler(this);
         this.profileHandler = new ProfileHandler(this);
         this.mongoHandler = new MongoHandler(this);
     }

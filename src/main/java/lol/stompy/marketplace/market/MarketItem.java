@@ -5,12 +5,17 @@ import lol.stompy.marketplace.profile.Profile;
 import lol.stompy.marketplace.util.Serializer;
 import lombok.Getter;
 import lombok.SneakyThrows;
+import org.bson.Document;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.UUID;
 
 @Getter
 public class MarketItem {
 
-    private final Profile profile;
+    private final UUID uuid;
+
+    private final UUID owner;
     private final ItemStack stack;
     private final int cost;
 
@@ -23,7 +28,9 @@ public class MarketItem {
      */
 
     public MarketItem(Profile profile, ItemStack stack, int cost) {
-        this.profile = profile;
+        this.uuid = UUID.randomUUID();
+
+        this.owner = profile.getUuid();
         this.cost = cost;
         this.stack = stack;
 
@@ -36,34 +43,35 @@ public class MarketItem {
     /**
      * deserializes a market item
      *
-     * @param profile owner of the item
-     * @param s string to deserialize from
+     * @param document document to get data from
      */
 
     @SneakyThrows
-    public MarketItem(Profile profile, String s) {
-        this.profile = profile;
+    public MarketItem(Document document) {
+        this.uuid = UUID.fromString(document.getString("_id"));
 
-        final String[] args = s.split("//");
-
-        this.stack = Serializer.itemStackFromBase64(args[0]);
-        this.cost = Integer.parseInt(args[1]);
+        this.stack = Serializer.itemStackFromBase64(document.getString("stack"));
+        this.cost = document.getInteger("cost");
+        this.owner = UUID.fromString(document.getString("owner"));
 
         if (stack != null)
             NBT.modify(stack, nbt -> {
                 nbt.setInteger("cost", cost);
-                nbt.setString("owner", profile.getUuid().toString());
+                nbt.setString("owner", owner.toString());
             });
     }
 
     /**
-     * serializes the market item
+     * puts all info of the market item into a document
      *
-     * @return {@link String}
+     * @return {@link Document}
      */
 
-    @Override
-    public String toString() {
-        return Serializer.itemStackToBase64(stack) + "//" + cost;
+    public final Document toBson() {
+        return new Document("_id", uuid.toString())
+                .append("stack", Serializer.itemStackToBase64(stack))
+                .append("cost", cost)
+                .append("owner", owner.toString());
     }
+
 }
