@@ -1,17 +1,26 @@
 package lol.stompy.marketplace.util.menu;
 
 import lol.stompy.marketplace.util.menu.listener.MenuListener;
+import lombok.Getter;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class MenuHandler {
 
+    /**
+     * -- GETTER --
+     *  Get the instance of the menu handler
+     *
+     * @return the instance
+     */
+    @Getter
     private static MenuHandler instance;
-    private final Map<Player, Menu> menus = new ConcurrentHashMap<>();
+    private final Map<Player, Menu> menus = new HashMap<>();
 
     /**
      * Constructor to create a new menu handler
@@ -54,22 +63,13 @@ public class MenuHandler {
     }
 
     /**
-     * Get the instance of the menu handler
-     *
-     * @return the instance
-     */
-    public static MenuHandler getInstance() {
-        return instance;
-    }
-
-    /**
      * Updates menus with a specific title
      *
      * @param title of the menu
      */
 
     public void updateMenus(String title) {
-        menus.values().stream().filter(menu -> menu.getTitle().equalsIgnoreCase(title)).forEach(menu -> menu.updateMenu());
+        menus.values().stream().filter(menu -> menu.getTitle().equalsIgnoreCase(title)).forEach(Menu::updateMenu);
     }
 
     /**
@@ -77,7 +77,11 @@ public class MenuHandler {
      */
 
     public void updateMenus() {
-        menus.values().forEach(menu -> menu.updateMenu());
+        menus.values().forEach(Menu::updateMenu);
+    }
+
+    public final Collection<Menu> getMenus() {
+        return this.menus.values();
     }
 
 }

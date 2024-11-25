@@ -17,7 +17,7 @@ import java.util.Map;
 public abstract class Menu {
 
 
-    private final Player player;
+    protected final Player player;
     public final String title;
     private final int size;
 

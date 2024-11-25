@@ -1,7 +1,5 @@
 package lol.stompy.marketplace.profile;
 
-import lol.stompy.marketplace.Marketplace;
-import lol.stompy.marketplace.market.MarketItem;
 import lol.stompy.marketplace.market.transaction.MarketTransaction;
 import lombok.Getter;
 import org.bson.Document;
@@ -33,9 +31,19 @@ public class Profile {
      * @param document document to create profile out of
      */
 
-    public Profile(Document document, Marketplace marketplace) {
+    public Profile(Document document) {
         this.uuid = UUID.fromString(document.getString("uuid"));
         this.marketTransactions = document.getList("marketTransactions", String.class).stream().map(MarketTransaction::new).toList();
+    }
+
+    /**
+     * adds a market transaction
+     *
+     * @param marketTransaction market transaction to add
+     */
+
+    public final void addMarketTransaction(MarketTransaction marketTransaction) {
+        marketTransactions.add(marketTransaction);
     }
 
     /**

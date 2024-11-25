@@ -46,7 +46,7 @@ public class ProfileHandler {
             return;
         }
 
-        profileMap.put(uuid, new Profile(document, marketplace));
+        profileMap.put(uuid, new Profile(document));
     }
 
     /**

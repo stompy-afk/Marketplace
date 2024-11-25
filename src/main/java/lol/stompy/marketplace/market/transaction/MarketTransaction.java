@@ -1,6 +1,6 @@
 package lol.stompy.marketplace.market.transaction;
 
-import de.tr7zw.nbtapi.NBT;
+import lol.stompy.marketplace.market.MarketItem;
 import lol.stompy.marketplace.util.Serializer;
 import lombok.SneakyThrows;
 import org.bukkit.inventory.ItemStack;
@@ -12,24 +12,27 @@ public class MarketTransaction {
 
     private final ItemStack stack;
 
-    private int cost;
-    private UUID owner;
+    private final int cost;
+    private final UUID owner;
 
     private final String date;
 
     /**
      * records a transaction done on the market
      *
-     * @param stack ItemStack that got traded
+     * @param marketItem market item that got traded
      */
 
-    public MarketTransaction(ItemStack stack) {
-        this.stack = stack;
+    public MarketTransaction(MarketItem marketItem) {
+        this.stack = marketItem.getStack();
 
-        NBT.get(stack, nbt -> {
-            this.owner = UUID.fromString(nbt.getString("owner"));
-            this.cost = nbt.getInteger("cost");
-        });
+        this.owner = marketItem.getOwner();
+        int cost = marketItem.getCost();
+
+        if (marketItem.isBlackMarketItem())
+            this.cost = cost / 2;
+        else
+            this.cost = cost;
 
         this.date = new Date().toString();
     }

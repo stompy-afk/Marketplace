@@ -1,10 +1,14 @@
 package lol.stompy.marketplace;
 
+import lol.stompy.marketplace.commands.MarketCommand;
 import lol.stompy.marketplace.market.MarketItemHandler;
 import lol.stompy.marketplace.mongo.MongoHandler;
 import lol.stompy.marketplace.profile.Profile;
 import lol.stompy.marketplace.profile.ProfileHandler;
+import lol.stompy.marketplace.util.menu.MenuHandler;
 import lombok.Getter;
+import me.vaperion.blade.Blade;
+import me.vaperion.blade.bukkit.BladeBukkitPlatform;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -18,6 +22,7 @@ public class Marketplace extends JavaPlugin {
     private ProfileHandler profileHandler;
     private MarketItemHandler marketItemHandler;
     private MongoHandler mongoHandler;
+    private MenuHandler menuHandler;
 
     private Economy economy;
 
@@ -42,6 +47,10 @@ public class Marketplace extends JavaPlugin {
         this.marketItemHandler = new MarketItemHandler(this);
         this.profileHandler = new ProfileHandler(this);
         this.mongoHandler = new MongoHandler(this);
+        this.menuHandler = new MenuHandler(this);
+
+        Blade.forPlatform(new BladeBukkitPlatform(this)).build()
+                .register(new MarketCommand(this));
     }
 
     /**
