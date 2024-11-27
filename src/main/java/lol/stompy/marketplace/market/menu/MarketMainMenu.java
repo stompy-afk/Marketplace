@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class MarketMenu extends PaginatedMenu {
+public class MarketMainMenu extends PaginatedMenu {
 
     private final Marketplace marketplace;
     private final MarketItemHandler marketItemHandler;
@@ -28,7 +28,7 @@ public class MarketMenu extends PaginatedMenu {
      * @param player the player to create the menu for
      */
 
-    public MarketMenu(Player player, Marketplace marketplace, boolean blackMarket) {
+    public MarketMainMenu(Player player, Marketplace marketplace, boolean blackMarket) {
         super(player, "Market Place", 27);
 
         this.blackMarket = blackMarket;

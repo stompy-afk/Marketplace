@@ -1,4 +1,4 @@
-package lol.stompy.marketplace.market.transaction;
+package lol.stompy.marketplace.market.transaction.menu;
 
 import lol.stompy.marketplace.profile.Profile;
 import lol.stompy.marketplace.util.menu.buttons.Button;

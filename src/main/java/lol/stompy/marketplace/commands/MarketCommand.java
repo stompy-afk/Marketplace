@@ -1,8 +1,8 @@
 package lol.stompy.marketplace.commands;
 
 import lol.stompy.marketplace.Marketplace;
-import lol.stompy.marketplace.market.menu.MarketMenu;
-import lol.stompy.marketplace.market.transaction.MarketTransactionMenu;
+import lol.stompy.marketplace.market.menu.MarketMainMenu;
+import lol.stompy.marketplace.market.transaction.menu.MarketTransactionMenu;
 import lol.stompy.marketplace.profile.Profile;
 import lol.stompy.marketplace.util.CC;
 import lombok.AllArgsConstructor;
@@ -24,13 +24,13 @@ public class MarketCommand {
     @Command(value = "marketplace")
     @Permission(value = "marketplace.view")
     public final void marketplaceCommand(@Sender Player player) {
-        new MarketMenu(player, marketplace, false).updateMenu();
+        new MarketMainMenu(player, marketplace, false).updateMenu();
     }
 
     @Command(value = "marketplace")
     @Permission(value = "marketplace.blackmarket")
     public final void blackMarketPlace(@Sender Player player) {
-        new MarketMenu(player, marketplace, true).updateMenu();
+        new MarketMainMenu(player, marketplace, true).updateMenu();
     }
 
     @Command(value = "transactions")

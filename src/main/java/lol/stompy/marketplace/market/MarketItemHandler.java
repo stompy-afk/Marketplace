@@ -3,7 +3,7 @@ package lol.stompy.marketplace.market;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.ReplaceOptions;
 import lol.stompy.marketplace.Marketplace;
-import lol.stompy.marketplace.market.menu.MarketMenu;
+import lol.stompy.marketplace.market.menu.MarketMainMenu;
 import lol.stompy.marketplace.market.transaction.MarketTransaction;
 import lol.stompy.marketplace.profile.Profile;
 import lol.stompy.marketplace.util.menu.Menu;
@@ -120,10 +120,10 @@ public class MarketItemHandler {
         marketItemRemovedList.add(marketItem.getUuid());
 
         for (Menu menu : marketplace.getMenuHandler().getMenus()) {
-            if (menu.getPlayer().getUniqueId().equals(player.getUniqueId()) || !(menu instanceof MarketMenu))
+            if (menu.getPlayer().getUniqueId().equals(player.getUniqueId()) || !(menu instanceof MarketMainMenu))
                 return;
 
-            final MarketMenu marketMenu = (MarketMenu) menu;
+            final MarketMainMenu marketMenu = (MarketMainMenu) menu;
 
             if (marketMenu.isBlackMarket() && blackMarket) {
                 menu.updateMenu();
