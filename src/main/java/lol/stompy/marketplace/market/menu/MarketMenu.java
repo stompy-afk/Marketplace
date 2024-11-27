@@ -62,10 +62,7 @@ public class MarketMenu extends PaginatedMenu {
                     return;
                 }
 
-                marketItemHandler.purchase(marketItem, player, optionalProfile.get());
-                player.sendMessage(CC.translate("&aYou've purchased a market item for " + (blackMarket ? marketItem.getCost() / 2 : marketItem.getCost())));
-
-                this.updateMenu();
+                new MarketConfirmationGUI(player, marketItem, optionalProfile.get(), marketItemHandler).updateMenu();
             });
 
             i.getAndIncrement();

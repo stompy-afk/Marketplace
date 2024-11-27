@@ -3,9 +3,13 @@ package lol.stompy.marketplace.market.transaction;
 import lol.stompy.marketplace.market.MarketItem;
 import lol.stompy.marketplace.util.Serializer;
 import lombok.SneakyThrows;
+import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 public class MarketTransaction {
@@ -51,6 +55,33 @@ public class MarketTransaction {
         this.cost = Integer.parseInt(args[1]);
         this.owner = UUID.fromString(args[2]);
         this.date = args[3];
+    }
+
+    /**
+     * gets the item stack
+     *
+     * @return {@link ItemStack}
+     */
+
+    public final ItemStack getStack() {
+        final ItemStack clone = stack.clone();
+
+        ItemMeta meta = clone.getItemMeta();
+
+        if (meta == null)
+            meta = Bukkit.getItemFactory().getItemMeta(clone.getType());
+
+        final List<String> lore = new ArrayList<>();
+
+        if (meta.getLore() != null && !meta.getLore().isEmpty())
+            lore.addAll(meta.getLore());
+
+        lore.add("&eSeller&7: " + Bukkit.getOfflinePlayer(owner).getName());
+        lore.add("&eCost&7: " + cost);
+
+        meta.setLore(lore);
+        clone.setItemMeta(meta);
+        return clone;
     }
 
     /**
