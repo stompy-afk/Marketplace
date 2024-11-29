@@ -1,4 +1,5 @@
 name: Marketplace
 version: 1.0
+api-version: 1.13
 main: lol.stompy.marketplace.Marketplace
 description: Marketplace plugin

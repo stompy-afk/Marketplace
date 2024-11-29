@@ -90,6 +90,17 @@ public class MarketItemHandler {
         marketplace.getMongoHandler().getMarketItems().replaceOne(document, marketItem.toBson(), new ReplaceOptions().upsert(true));
     }
 
+    public final void handleRemoval() {
+        marketItemRemovedList.forEach(uuid -> {
+            final Document document = marketplace.getMongoHandler().getMarketItems().find(Filters.eq("_id", uuid.toString())).first();
+
+            if (document == null)
+                return;
+
+            marketplace.getMongoHandler().getMarketItems().deleteOne(document);
+        });
+    }
+
     /**
      * adds a market item to the market
      *

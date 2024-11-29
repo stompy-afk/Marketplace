@@ -61,6 +61,8 @@ public class Marketplace extends JavaPlugin {
     public void onDisable() {
         for (Profile profile : profileHandler.getProfiles())
             profileHandler.save(profile, false);
+
+        marketItemHandler.handleRemoval();
     }
 
     /**

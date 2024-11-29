@@ -32,7 +32,7 @@ public class Profile {
      */
 
     public Profile(Document document) {
-        this.uuid = UUID.fromString(document.getString("uuid"));
+        this.uuid = UUID.fromString(document.getString("_id"));
         this.marketTransactions = document.getList("marketTransactions", String.class).stream().map(MarketTransaction::new).toList();
     }
 
