@@ -1,7 +1,9 @@
 package lol.stompy.marketplace.market.transaction;
 
 import lol.stompy.marketplace.market.MarketItem;
+import lol.stompy.marketplace.util.CC;
 import lol.stompy.marketplace.util.Serializer;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
@@ -12,6 +14,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+@Getter
 public class MarketTransaction {
 
     private final ItemStack stack;
@@ -77,9 +80,9 @@ public class MarketTransaction {
             lore.addAll(meta.getLore());
 
         lore.add("&eSeller&7: " + Bukkit.getOfflinePlayer(owner).getName());
-        lore.add("&eCost&7: " + cost);
+        lore.add("&eDate&7: " + date);
 
-        meta.setLore(lore);
+        meta.setLore(CC.translate(lore));
         clone.setItemMeta(meta);
         return clone;
     }

@@ -29,7 +29,7 @@ public class MarketMainMenu extends PaginatedMenu {
      */
 
     public MarketMainMenu(Player player, Marketplace marketplace, boolean blackMarket) {
-        super(player, "Market Place", 27);
+        super(player, blackMarket ? "Black Market" : "Market Place" , 27);
 
         this.blackMarket = blackMarket;
         this.marketplace = marketplace;
@@ -39,13 +39,16 @@ public class MarketMainMenu extends PaginatedMenu {
     @Override
     public Map<Integer, Button> getButtons() {
         final Map<Integer, Button> buttonMap = new HashMap<>();
-        final AtomicInteger i = new AtomicInteger();
+        final AtomicInteger i = new AtomicInteger(0);
 
         marketItemHandler.getMarketItemList().forEach(marketItem -> {
             if (blackMarket && !marketItem.isBlackMarketItem())
                 return;
 
-            buttonMap.put(i.get(), new Button(marketItem.getStack())).setClickAction(action -> {
+            if (!blackMarket && marketItem.isBlackMarketItem())
+                return;
+
+            buttonMap.put(i.get(), new Button(marketItem.getStack()).setClickAction(action -> {
                 action.setCancelled(true);
 
                 final Optional<Profile> optionalProfile = marketplace.getProfileHandler().getProfile(player.getUniqueId());
@@ -63,7 +66,7 @@ public class MarketMainMenu extends PaginatedMenu {
                 }
 
                 new MarketConfirmationGUI(player, marketItem, optionalProfile.get(), marketItemHandler).updateMenu();
-            });
+            }));
 
             i.getAndIncrement();
         });

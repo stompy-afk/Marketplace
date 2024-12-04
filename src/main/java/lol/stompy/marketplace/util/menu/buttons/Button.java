@@ -17,6 +17,8 @@ import java.util.stream.Collectors;
 @Getter
 public class Button implements Cloneable {
 
+    private ItemStack item;
+
     private Material material;
     private ItemMeta meta;
 
@@ -44,16 +46,7 @@ public class Button implements Cloneable {
      * @param itemStack the item stack to get it from
      */
     public Button(ItemStack itemStack) {
-        this.material = itemStack.getType();
-        this.meta = itemStack.getItemMeta();
-
-        this.displayName = meta.getDisplayName();
-        this.lore = meta.getLore().toArray(new String[0]);
-        this.data = itemStack.getData().getData();
-        this.amount = itemStack.getAmount();
-        this.customMetaData = meta.getCustomModelData();
-
-        this.enchantments = itemStack.getEnchantments();
+        this.item = itemStack;
     }
 
     public Button setItemStack(ItemStack itemStack) {
@@ -201,6 +194,9 @@ public class Button implements Cloneable {
      * @return the newly created item stack
      */
     public ItemStack toItemStack() {
+        if (item != null)
+            return item;
+
         final ItemStack item = new ItemStack(this.getMaterial(), this.getAmount(), this.getData());
         final ItemMeta meta;
 

@@ -90,6 +90,16 @@ public class MarketItem {
     }
 
     /**
+     * gets the stack as its self
+     *
+     * @return {@link ItemStack}
+     */
+
+    public final ItemStack getItem() {
+        return stack;
+    }
+
+    /**
      * puts all info of the market item into a document
      *
      * @return {@link Document}

@@ -27,7 +27,7 @@ public class MarketCommand {
         new MarketMainMenu(player, marketplace, false).updateMenu();
     }
 
-    @Command(value = "marketplace")
+    @Command(value = "blackmarket")
     @Permission(value = "marketplace.blackmarket")
     public final void blackMarketPlace(@Sender Player player) {
         new MarketMainMenu(player, marketplace, true).updateMenu();

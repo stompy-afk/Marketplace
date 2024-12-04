@@ -1,3 +1,11 @@
+web-hook-link: ""
+
+black-market:
+  reset: 30 #in seconds
+  chance: 0.5 #chance of item ending up in black market
+  message:
+    - "&a&lThe black market has been reset!"
+
 mongo:
   uri-mode: false
   normal:

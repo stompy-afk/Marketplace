@@ -1,14 +1,21 @@
 package lol.stompy.marketplace.market;
 
+import com.eduardomcb.discord.webhook.WebhookClient;
+import com.eduardomcb.discord.webhook.WebhookManager;
+import com.eduardomcb.discord.webhook.models.Message;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.ReplaceOptions;
 import lol.stompy.marketplace.Marketplace;
+import lol.stompy.marketplace.market.menu.MarketConfirmationGUI;
 import lol.stompy.marketplace.market.menu.MarketMainMenu;
 import lol.stompy.marketplace.market.transaction.MarketTransaction;
 import lol.stompy.marketplace.profile.Profile;
+import lol.stompy.marketplace.util.CC;
 import lol.stompy.marketplace.util.menu.Menu;
 import lombok.Getter;
 import org.bson.Document;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -16,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
+import java.util.logging.Level;
 
 public class MarketItemHandler {
 
@@ -24,6 +32,11 @@ public class MarketItemHandler {
     private final List<UUID> marketItemRemovedList;
 
     private final Random random;
+    private final WebhookManager webhookManager;
+
+    private final int blackMarketTiming;
+    private final double blackMarketChance;
+    private final List<String> blackMarketMessage;
 
     private final Marketplace marketplace;
 
@@ -41,6 +54,22 @@ public class MarketItemHandler {
         this.marketItemRemovedList = new ArrayList<>();
         this.random = new Random();
 
+        this.blackMarketTiming = marketplace.getConfig().getInt("black-market.reset");
+        this.blackMarketChance = marketplace.getConfig().getDouble("black-market.chance");
+        this.blackMarketMessage = marketplace.getConfig().getStringList("black-market.message");
+
+        this.webhookManager = new WebhookManager().setChannelUrl(marketplace.getConfig().getString("web-hook-link")).setListener(new WebhookClient.Callback() {
+            @Override
+            public void onSuccess(String s) {
+
+            }
+
+            @Override
+            public void onFailure(int i, String s) {
+                Bukkit.getServer().getLogger().log(Level.WARNING, "This webhook has failed to send!");
+            }
+        });
+
         this.load();
     }
 
@@ -56,14 +85,26 @@ public class MarketItemHandler {
         });
 
         marketplace.getServer().getScheduler().runTaskTimer(marketplace, () -> {
-            for (MarketItem marketItem : marketItemList) {
-                if (marketItem.isBlackMarketItem())
-                    marketItem.setBlackMarketItem(false);
+            if (marketItemList.isEmpty())
+                return;
 
-                if (random.nextDouble() <= 0.35)
+            for (MarketItem marketItem : marketItemList) {
+                if (marketItem.isBlackMarketItem()) {
+                    marketItem.setBlackMarketItem(false);
+                }
+
+                if (random.nextDouble() <= blackMarketChance) {
                     marketItem.setBlackMarketItem(true);
+                }
             }
-        }, 20L * 5 * 60, 20L * 5 * 60);
+
+            marketplace.getMenuHandler().getMenus().forEach(menu -> {
+                if (menu instanceof MarketMainMenu)
+                    menu.updateMenu();
+            });
+
+            blackMarketMessage.forEach(s -> marketplace.getServer().broadcastMessage(CC.translate(s)));
+        }, 20L * blackMarketTiming, 20L * blackMarketTiming);
     }
 
     /**
@@ -131,33 +172,49 @@ public class MarketItemHandler {
         marketItemRemovedList.add(marketItem.getUuid());
 
         for (Menu menu : marketplace.getMenuHandler().getMenus()) {
-            if (menu.getPlayer().getUniqueId().equals(player.getUniqueId()) || !(menu instanceof MarketMainMenu))
-                return;
+            if (menu.getPlayer().getUniqueId().equals(player.getUniqueId()))
+                continue;
 
-            final MarketMainMenu marketMenu = (MarketMainMenu) menu;
-
-            if (marketMenu.isBlackMarket() && blackMarket) {
+            if (menu instanceof MarketMainMenu)
                 menu.updateMenu();
-                return;
-            }
 
-            menu.updateMenu();
+            if (menu instanceof MarketConfirmationGUI) {
+                final MarketConfirmationGUI marketConfirmationGUI = (MarketConfirmationGUI) menu;
+
+                if (marketConfirmationGUI.getMarketItem().getUuid().equals(marketItem.getUuid())) {
+                    player.closeInventory();
+                    player.sendMessage(CC.translate("&cSorry someone bought this item before you!"));
+                }
+            }
         }
 
         if (player.getInventory().firstEmpty() == -1)
-            player.getWorld().dropItem(player.getLocation(), marketItem.getStack());
+            player.getWorld().dropItem(player.getLocation(), marketItem.getItem());
         else
-            player.getInventory().addItem(marketItem.getStack());
+            player.getInventory().addItem(marketItem.getItem());
+
+        final MarketTransaction marketTransaction = new MarketTransaction(marketItem);
+        purchaser.addMarketTransaction(marketTransaction);
+
+        final StringBuilder stringBuilder = new StringBuilder();
+        final OfflinePlayer seller = marketplace.getServer().getOfflinePlayer(marketItem.getOwner());
+
+        stringBuilder.append("New Purchase!").append("\n");
+        stringBuilder.append("Seller: ").append(seller.getName()).append("\n");
+        stringBuilder.append("Purchaser: ").append(player.getName()).append("\n");
+        stringBuilder.append("Date: ").append(marketTransaction.getDate()).append("\n");
+        stringBuilder.append("Cost:").append(marketTransaction.getCost()).append("\n");
+
+        webhookManager.setMessage(new Message().setContent(stringBuilder.toString())).exec();
 
         if (blackMarket) {
             marketplace.getEconomy().bankWithdraw(player.getName(), (double) marketItem.getCost() / 2);
-            marketplace.getEconomy().bankDeposit(marketplace.getServer().getOfflinePlayer(marketItem.getOwner()).getName(), marketItem.getCost() * 2);
-        } else {
-            marketplace.getEconomy().bankWithdraw(player.getName(), marketItem.getCost());
-            marketplace.getEconomy().bankDeposit(marketplace.getServer().getOfflinePlayer(marketItem.getOwner()).getName(), marketItem.getCost());
+            marketplace.getEconomy().bankDeposit(seller.getName(), marketItem.getCost() * 2);
+            return;
         }
 
-        purchaser.addMarketTransaction(new MarketTransaction(marketItem));
+        marketplace.getEconomy().bankWithdraw(player.getName(), marketItem.getCost());
+        marketplace.getEconomy().bankDeposit(seller.getName(), marketItem.getCost());
     }
 
 }

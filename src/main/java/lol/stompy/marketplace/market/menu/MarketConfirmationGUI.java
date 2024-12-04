@@ -6,6 +6,7 @@ import lol.stompy.marketplace.profile.Profile;
 import lol.stompy.marketplace.util.CC;
 import lol.stompy.marketplace.util.menu.Menu;
 import lol.stompy.marketplace.util.menu.buttons.Button;
+import lombok.Getter;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
@@ -14,7 +15,9 @@ import java.util.Map;
 
 public class MarketConfirmationGUI extends Menu {
 
+    @Getter
     private final MarketItem marketItem;
+
     private final MarketItemHandler marketItemHandler;
     private final Profile profile;
 
